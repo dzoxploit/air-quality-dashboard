@@ -71,31 +71,50 @@ const Dashboard = () => {
 
   const calculateAQI = (pm25Value) => {
     // Implement your AQI calculation logic here
-    // Refer to the provided reference for the calculation formula
-    // Return the calculated AQI value
-    // You can implement separate functions for hourly, daily, and monthly AQI calculations
-    return pm25Value; // Replace with actual AQI calculation
+    // Replace the following line with your actual AQI calculation
+    // This is just a placeholder returning the PM2.5 value
+    return pm25Value;
   };
 
   // Function to calculate Daily AQI
-  const calculateDailyAQI = (dailyData) => {
-    // Implement your daily AQI calculation logic here
-    // You may use the average PM2.5 value for the day
-    // Return the calculated daily AQI value
-    return calculateAQI(
-      dailyData.reduce((sum, entry) => sum + entry.value, 0) / dailyData.length
-    );
-  };
+  const calculateDailyAQI = ({ dailyData = [] }) => {
+    // Check if dailyData is available
+    if (!dailyData || dailyData.length === 0) {
+      return 0; // or any default value
+    }
 
+    // Flatten the nested array
+    const flattenedData = dailyData.reduce((acc, entry) => {
+      if (Array.isArray(entry)) {
+        return acc.concat(entry);
+      } else {
+        return acc.concat([entry]);
+      }
+    }, []);
+
+    // Assuming your dailyData is an array of objects with a 'value' property
+    const averagePM25 =
+      flattenedData.reduce((sum, entry) => sum + entry.value, 0) /
+      flattenedData.length;
+
+    // Calculate and return the AQI value for the average PM2.5 value
+    return calculateAQI(averagePM25);
+  };
   // Function to calculate Monthly AQI
   const calculateMonthlyAQI = (monthlyData) => {
-    // Implement your monthly AQI calculation logic here
-    // You may use the average PM2.5 value for the month
-    // Return the calculated monthly AQI value
-    return calculateAQI(
+    // Ensure monthlyData is not an empty array
+    if (monthlyData.length === 0) {
+      return null; // or handle accordingly based on your requirements
+    }
+
+    // Calculate the average PM2.5 value for the month
+    const averagePM25 =
       monthlyData.reduce((sum, entry) => sum + entry.value, 0) /
-        monthlyData.length
-    );
+      monthlyData.length;
+
+    // Calculate and return the AQI value for the average PM2.5 value
+    const aqiValue = calculateAQI(averagePM25);
+    return aqiValue;
   };
 
   const hourlyData = data?.slice(0, 24);
@@ -128,11 +147,11 @@ const Dashboard = () => {
 
   const groupDataByDay = (data) => {
     const groupedData = data.reduce((result, entry) => {
-      const date = entry.date.local.split("T")[0];
-      if (!result[date]) {
-        result[date] = [];
+      const dateTime = entry.date.local.split("T")[0];
+      if (!result[dateTime]) {
+        result[dateTime] = [];
       }
-      result[date].push(entry);
+      result[dateTime].push(entry);
       return result;
     }, {});
     return Object.values(groupedData);
@@ -144,7 +163,10 @@ const Dashboard = () => {
       if (!result[month]) {
         result[month] = [];
       }
-      result[month].push(entry);
+      result[month].push({
+        date: entry.date.local,
+        value: entry.value,
+      });
       return result;
     }, {});
     return Object.values(groupedData);
