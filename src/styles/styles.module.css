@@ -1,0 +1,35 @@
+/* styles/styles.module.css */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.chart-container {
+  margin-top: 20px;
+}
+
+.detail-popup {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+}
+
+.error-message {
+  color: #ff0000;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.location-form {
+  margin-top: 20px;
+}
+
+.location-form label {
+  margin-right: 10px;
+}
+
+.location-form select {
+  margin-right: 10px;
+}
